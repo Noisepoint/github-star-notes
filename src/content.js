@@ -26,7 +26,7 @@
 
   function getVisibleNoteCount() {
     return Array.from(document.querySelectorAll(".ghsn-note")).filter((note) => {
-      return window.GitHubStarNotesPage.isVisibleElement(note) && !window.GitHubStarNotesPage.isInsideIgnoredStarsArea(note);
+      return window.GitHubStarNotesPage.isVisibleElement(note) && !window.GitHubStarNotesPage.isInsideIgnoredStarsArea(note.parentElement);
     }).length;
   }
 
