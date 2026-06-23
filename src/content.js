@@ -2,8 +2,14 @@
   let renderTimer = null;
   let observer = null;
   let lastUrl = window.location.href;
+  let lastBody = null;
+  const renderDelays = [120, 500, 1200];
 
   function render() {
+    if (!document.body || !window.GitHubStarNotesPage || !window.GitHubStarNotesUI) {
+      return;
+    }
+
     const pageType = window.GitHubStarNotesPage.getCurrentPageType();
 
     window.GitHubStarNotesUI.mountToolbar();
@@ -19,9 +25,13 @@
     }
   }
 
-  function scheduleRender() {
+  function scheduleRender(delays = renderDelays) {
     window.clearTimeout(renderTimer);
-    renderTimer = window.setTimeout(render, 120);
+    renderTimer = window.setTimeout(render, delays[0]);
+
+    delays.slice(1).forEach((delay) => {
+      window.setTimeout(render, delay);
+    });
   }
 
   function getVisibleNoteCount() {
@@ -31,6 +41,12 @@
   }
 
   function checkRenderHealth() {
+    if (document.body !== lastBody) {
+      startObserver();
+      scheduleRender();
+      return;
+    }
+
     const currentUrl = window.location.href;
     if (currentUrl !== lastUrl) {
       lastUrl = currentUrl;
@@ -43,9 +59,25 @@
     }
 
     const repoItems = window.GitHubStarNotesPage.findStarsRepoItems();
-    if (repoItems.length > 0 && getVisibleNoteCount() < repoItems.length) {
+    const visibleNoteCount = getVisibleNoteCount();
+    if (repoItems.length > 0 && visibleNoteCount < repoItems.length) {
       scheduleRender();
     }
+  }
+
+  function isPluginNode(node) {
+    return node.nodeType === Node.ELEMENT_NODE && Boolean(node.closest?.(".ghsn-note, .ghsn-toolbar") || node.matches?.(".ghsn-note, .ghsn-toolbar"));
+  }
+
+  function isMeaningfulPageNode(node) {
+    if (node.nodeType !== Node.ELEMENT_NODE || isPluginNode(node)) {
+      return false;
+    }
+
+    return Boolean(
+      node.matches?.("main, turbo-frame, [data-turbo-body], [data-testid='stars-search-bar'], .Box-row, .col-12, li") ||
+        node.querySelector?.("main, turbo-frame, [data-turbo-body], [data-testid='stars-search-bar'], .Box-row, .col-12, li, a[href^='/']")
+    );
   }
 
   function startObserver() {
@@ -53,11 +85,14 @@
       observer.disconnect();
     }
 
+    if (!document.body) {
+      return;
+    }
+
+    lastBody = document.body;
     observer = new MutationObserver((mutations) => {
       const shouldRender = mutations.some((mutation) => {
-        return Array.from(mutation.addedNodes).some((node) => {
-          return node.nodeType === Node.ELEMENT_NODE && !node.closest?.(".ghsn-note, .ghsn-toolbar");
-        });
+        return Array.from(mutation.addedNodes).some(isMeaningfulPageNode);
       });
 
       if (shouldRender) {
@@ -79,10 +114,13 @@
       window.GitHubStarNotesUI.refreshMountedNotes(event.detail?.repoKey);
     });
 
-    window.addEventListener("popstate", scheduleRender);
-    document.addEventListener("turbo:load", scheduleRender);
-    document.addEventListener("turbo:render", scheduleRender);
-    document.addEventListener("turbo:frame-load", scheduleRender);
+    window.addEventListener("popstate", () => scheduleRender());
+    document.addEventListener("turbo:load", () => scheduleRender());
+    document.addEventListener("turbo:render", () => scheduleRender());
+    document.addEventListener("turbo:frame-load", () => scheduleRender());
+    document.addEventListener("turbo:before-render", () => {
+      window.setTimeout(startObserver, 0);
+    });
     window.setInterval(checkRenderHealth, 1000);
   }
 
