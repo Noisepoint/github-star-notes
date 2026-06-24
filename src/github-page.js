@@ -201,8 +201,32 @@
       return description;
     }
 
-    const header = link.closest("h3") || link.closest(".d-inline-block") || link.closest("div");
-    return header || item;
+    const header = link.closest("h3") || link.closest(".d-inline-block");
+    const wideHeader = findWideStarsHeaderAnchor(item, header);
+    const headerBlock = header?.closest(".d-inline-block");
+    return wideHeader || headerBlock || header || item;
+  }
+
+  function findWideStarsHeaderAnchor(item, header) {
+    if (!item || !header) {
+      return null;
+    }
+
+    const itemWidth = item.getBoundingClientRect().width;
+    let current = header;
+
+    while (current && current !== item) {
+      if (isVisibleElement(current) && !isInsideIgnoredStarsArea(current)) {
+        const width = current.getBoundingClientRect().width;
+        if (itemWidth === 0 || width >= itemWidth * 0.55 || width >= 520) {
+          return current;
+        }
+      }
+
+      current = current.parentElement;
+    }
+
+    return null;
   }
 
   function findRepoPageTarget() {
