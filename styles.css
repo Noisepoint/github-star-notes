@@ -5,8 +5,8 @@
   --ghsn-muted: var(--fgColor-muted, #57606a);
   --ghsn-accent: var(--fgColor-accent, #0969da);
   --ghsn-danger: var(--fgColor-danger, #cf222e);
-  --ghsn-canvas: var(--canvasColor-default, #ffffff);
-  --ghsn-subtle: var(--canvasColor-subtle, #f6f8fa);
+  --ghsn-canvas: var(--bgColor-default, var(--canvasColor-default, #ffffff));
+  --ghsn-subtle: var(--bgColor-muted, var(--canvasColor-subtle, #f6f8fa));
   --ghsn-success-bg: rgba(31, 136, 61, 0.12);
 }
 

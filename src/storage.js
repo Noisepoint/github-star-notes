@@ -43,15 +43,35 @@
     return data;
   }
 
+  function isExtensionContextInvalidated(error) {
+    return error?.message?.includes("Extension context invalidated");
+  }
+
   async function getData() {
-    const result = await chrome.storage.local.get(STORAGE_KEY);
-    return normalizeData(result[STORAGE_KEY]);
+    try {
+      const result = await chrome.storage.local.get(STORAGE_KEY);
+      return normalizeData(result[STORAGE_KEY]);
+    } catch (error) {
+      if (isExtensionContextInvalidated(error)) {
+        return createEmptyData();
+      }
+
+      throw error;
+    }
   }
 
   async function setData(data) {
-    await chrome.storage.local.set({
-      [STORAGE_KEY]: normalizeData(data)
-    });
+    try {
+      await chrome.storage.local.set({
+        [STORAGE_KEY]: normalizeData(data)
+      });
+    } catch (error) {
+      if (isExtensionContextInvalidated(error)) {
+        return;
+      }
+
+      throw error;
+    }
   }
 
   async function getRepoNote(repoKey) {
