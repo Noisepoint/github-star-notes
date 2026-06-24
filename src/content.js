@@ -3,7 +3,7 @@
   let observer = null;
   let lastUrl = window.location.href;
   let lastBody = null;
-  const renderDelays = [120, 500, 1200];
+  const renderDelay = 250;
 
   function render() {
     if (!document.body || !window.GitHubStarNotesPage || !window.GitHubStarNotesUI) {
@@ -25,13 +25,9 @@
     }
   }
 
-  function scheduleRender(delays = renderDelays) {
+  function scheduleRender(delay = renderDelay) {
     window.clearTimeout(renderTimer);
-    renderTimer = window.setTimeout(render, delays[0]);
-
-    delays.slice(1).forEach((delay) => {
-      window.setTimeout(render, delay);
-    });
+    renderTimer = window.setTimeout(render, delay);
   }
 
   function getVisibleNoteCount() {
