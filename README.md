@@ -186,7 +186,7 @@ github-star-notes/
 │   └── icon128.png
 ├── README.md
 ├── privacy.md
-└── SPEC.md
+└── LICENSE
 ```
 
 ## 路线图
