@@ -224,7 +224,20 @@
   }
 
   function mountRepoNote(target) {
-    if (!target?.item || !target.anchor || target.item.querySelector(`[${NOTE_MOUNTED_ATTR}="${target.repoKey}"]`)) {
+    if (!target?.item || !target.anchor) {
+      return;
+    }
+
+    const existingRepoNotes = Array.from(document.querySelectorAll(`[${NOTE_MOUNTED_ATTR}="${target.repoKey}"][data-variant="repo"]`));
+    const currentRepoNote = existingRepoNotes.find((note) => target.item.contains(note));
+
+    existingRepoNotes.forEach((note) => {
+      if (note !== currentRepoNote) {
+        note.remove();
+      }
+    });
+
+    if (currentRepoNote) {
       return;
     }
 
@@ -232,6 +245,33 @@
     root.setAttribute(NOTE_MOUNTED_ATTR, target.repoKey);
     target.anchor.insertAdjacentElement("afterend", root);
     renderNote(root);
+  }
+
+  function cleanupForPageType(pageType) {
+    const currentRepoKey = pageType === "repo" ? window.GitHubStarNotesPage.getRepoKeyFromUrl(window.location.href) : null;
+
+    if (pageType !== "stars") {
+      document.querySelectorAll(".ghsn-toolbar").forEach((toolbar) => toolbar.remove());
+    }
+
+    Array.from(document.querySelectorAll(`[${NOTE_MOUNTED_ATTR}]`)).forEach((note) => {
+      const variant = note.dataset.variant;
+      const repoKey = note.dataset.repoKey;
+
+      if (pageType === "stars" && variant !== "stars") {
+        note.remove();
+        return;
+      }
+
+      if (pageType === "repo" && (variant !== "repo" || repoKey !== currentRepoKey)) {
+        note.remove();
+        return;
+      }
+
+      if (pageType === "unsupported") {
+        note.remove();
+      }
+    });
   }
 
   async function refreshMountedNotes(repoKey) {
@@ -244,6 +284,7 @@
     mountToolbar,
     mountStarsNote,
     mountRepoNote,
+    cleanupForPageType,
     refreshMountedNotes
   };
 })();

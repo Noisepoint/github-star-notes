@@ -67,7 +67,7 @@
       return "stars";
     }
 
-    if (pathParts.length >= 2 && getRepoKeyFromUrl(window.location.href)) {
+    if (pathParts.length === 2 && getRepoKeyFromUrl(window.location.href)) {
       return "repo";
     }
 
@@ -217,7 +217,7 @@
 
     const aboutSection = document.querySelector('div.BorderGrid-cell h2, div.BorderGrid-cell h3')?.closest(".BorderGrid-cell");
     const repoHeader = document.querySelector('[data-testid="repository-container-header"]') || document.querySelector("#repository-container-header");
-    const fallback = document.querySelector("main");
+    const fallback = document.querySelector('[data-testid="repository-container-header"]')?.parentElement || document.querySelector("main");
 
     return {
       repoKey,

@@ -11,6 +11,7 @@
     }
 
     const pageType = window.GitHubStarNotesPage.getCurrentPageType();
+    window.GitHubStarNotesUI.cleanupForPageType(pageType);
 
     window.GitHubStarNotesUI.mountToolbar();
 
