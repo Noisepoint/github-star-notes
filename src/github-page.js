@@ -80,6 +80,7 @@
     }
 
     const seenRepoKeys = new Set();
+    const seenItems = new WeakSet();
     const candidates = [];
 
     Array.from(document.querySelectorAll('main a[href^="/"]')).forEach((link) => {
@@ -89,11 +90,12 @@
       }
 
       const item = findStarsRepoContainer(link);
-      if (!item || !isLikelyStarsRepoItem(item, link, repoKey)) {
+      if (!item || seenItems.has(item) || !isLikelyStarsRepoItem(item, link, repoKey)) {
         return;
       }
 
       seenRepoKeys.add(repoKey);
+      seenItems.add(item);
       candidates.push({
         repoKey,
         item,
@@ -109,6 +111,10 @@
       return false;
     }
 
+    if (!isStarsPrimaryRepoLink(item, link)) {
+      return false;
+    }
+
     const href = new URL(link.href).pathname;
     const [owner, repo] = repoKey.split("/");
     const itemText = item.textContent.replace(/\s+/g, " ").trim();
@@ -117,6 +123,11 @@
     const isExactRepoHref = href === `/${owner}/${repo}`;
 
     return isExactRepoHref && (hasRepoName || hasOwnerName);
+  }
+
+  function isStarsPrimaryRepoLink(item, link) {
+    const heading = link.closest("h2, h3");
+    return Boolean(heading && item.contains(heading));
   }
 
   function findStarsRepoContainer(link) {
