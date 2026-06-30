@@ -1,17 +1,17 @@
 # GitHub Star Notes
 
-给 GitHub Stars 和 repo 页面添加本地私人备注。
+在 GitHub 仓库页添加本地私人备注，并在 Stars 列表页自动展示。
 
 ## 这个工具解决什么问题
 
-GitHub Star 过的项目多了以后，很多 repo 名称是英文、缩写或品牌名，不点进去很难想起它是做什么的。
+看到有用的 GitHub repo 时，你可能会顺手 Star，但过一段时间后又忘了当初为什么收藏它。
 
-`GitHub Star Notes` 会在 GitHub Stars 列表页和 repo 详情页显示一条只有你自己能看到的备注。
+`GitHub Star Notes` 让你可以在 repo 页面记录项目用途、亮点或收藏原因，并在 Stars 列表页自动展示同一条备注，方便之后快速识别每个项目。
 
 ## 功能
 
-- 在 GitHub Stars 列表页添加 / 编辑备注。
-- 在 repo 详情页添加 / 编辑同一条备注。
+- 在 repo 详情页添加 / 编辑备注。
+- 在 GitHub Stars 列表页展示 / 编辑同一条备注。
 - 备注保存在浏览器本地。
 - 支持导出 JSON 备份。
 - 支持导入 JSON 迁移。
@@ -52,28 +52,30 @@ GitHub 搜索结果页
 
 ## 使用方式
 
-### Stars 列表页
+### repo 详情页
 
-打开你的 Stars 页面后，每个 repo 下方会出现备注入口：
+打开具体 repo 页面后，会显示备注入口：
 
 ```text
 添加备注
 ```
 
-写过备注后会显示：
-
-```text
-我的备注：这个项目是做什么的
-```
-
-### repo 详情页
-
-打开具体 repo 页面后，也会显示同一条备注。
-
 例如：
 
 ```text
 https://github.com/owner/repo
+```
+
+适合记录项目用途、亮点或收藏原因。
+
+### Stars 列表页
+
+打开你的 Stars 页面后，每个 repo 下方会显示同一条备注入口。
+
+写过备注后会显示：
+
+```text
+我的备注：这个项目是做什么的
 ```
 
 在 Stars 列表页和 repo 详情页编辑的是同一条备注。
